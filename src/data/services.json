@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Consulta general",
+    "description": "Consulta médica de 30 minutos",
+    "duration": 30,
+    "price": 15000,
+    "category": "salud",
+    "available": true
+  },
+  {
+    "id": 2,
+    "name": "Corte de pelo",
+    "description": "Corte clásico con lavado",
+    "duration": 45,
+    "price": 8000,
+    "category": "belleza",
+    "available": true
+  }
+]
