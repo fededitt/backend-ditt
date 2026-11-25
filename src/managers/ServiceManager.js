@@ -14,6 +14,14 @@ const REQUIRED_FIELDS = [
   "available",
 ];
 
+
+export class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
 export default class ServiceManager {
   constructor(filePath = DEFAULT_PATH) {
     this.filePath = filePath;
@@ -51,7 +59,9 @@ export default class ServiceManager {
     );
 
     if (missing.length > 0) {
-      throw new Error(`Servicio incompleto. Faltan campos: ${missing.join(", ")}`);
+      throw new ValidationError(
+        `Servicio incompleto. Faltan campos: ${missing.join(", ")}`
+      );
     }
 
     const services = await this.#readFile();
