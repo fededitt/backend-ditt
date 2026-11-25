@@ -116,26 +116,39 @@ POST /api/bookings
 - `src/data/`: `services.json` y `bookings.json`.
 - `src/utils/errors.js`: errores de validación compartidos.
 
-## Arquitectura
-
-El proyecto separa responsabilidades en tres capas:
+## Arquitectura en capas
 
 ```
-router → controller → manager → archivo JSON
+router → controller → service → repository → DAO → archivo JSON
 ```
 
-| Capa | Archivos | Responsabilidad |
-|------|----------|-----------------|
-| Router | `src/routes/` | Define los endpoints y los conecta con su controller |
-| Controller | `src/controllers/` | Lee `req.params`, `req.query` y `req.body`, llama al manager y responde con `res.status().json()` |
-| Manager | `src/managers/` | Lógica de datos y persistencia; no usa `req` ni `res` |
+| Capa | Carpeta | Responsabilidad |
+|------|---------|-----------------|
+| Router | `src/routes/` | Define endpoints y los conecta al controller |
+| Controller | `src/controllers/` | Lee `req`, llama al service y responde con `res` |
+| Service | `src/services/` | Reglas de negocio (validaciones, filtros, `quantity`); no conoce `req`/`res` |
+| Repository | `src/repositories/` | Métodos de acceso a datos, sin reglas de negocio |
+| DAO | `src/dao/` | Lee y escribe directamente en el archivo JSON |
+
+### Funciones por recurso
+
+- **services**: controller y service → `getServices`, `getServiceById`, `createService`, `updateService`, `deleteService`; repository y DAO → `getAll`, `getById`, `create`, `update`, `delete`.
+- **bookings**: controller y service → `createBooking`, `getBookingById`, `addServiceToBooking`; repository y DAO → `create`, `getById`, `update`.
+
+### Regla de negocio clave
+
+Si el mismo servicio se agrega dos veces a una reserva, se incrementa `quantity`. Esta lógica está en `bookings.service.js`, no en el DAO.
+
+### Manejo de errores
+
+Los services lanzan `ValidationError` (400) o `NotFoundError` (404) y el controller los traduce a códigos HTTP.
 
 ## Estructura
 
 ```
 src/
   config/env.config.js
-  controllers/  services.controller.js, bookings.controller.js
+  controllers/, services/, repositories/, dao/, routes/, data/, utils/ y config/.
   managers/     ServiceManager.js, BookingManager.js
   routes/       services.router.js, bookings.router.js
   data/         services.json, bookings.json
