@@ -6,7 +6,11 @@
     "duration": 30,
     "price": 8000,
     "category": "cabello",
-    "available": true
+    "available": true,
+    "clientName": "Juan",
+    "clientEmail": "martin@mail.com",
+    "date": "2026-12-05",
+    "time": "16:30"
   },
   {
     "id": 2,
@@ -33,7 +37,6 @@
     "duration": 90,
     "price": 18000,
     "category": "cabello",
-    "available": true
+    "available": false
   }
 ]
-
