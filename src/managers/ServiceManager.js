@@ -36,8 +36,20 @@ export default class ServiceManager {
     await fs.writeFile(this.filePath, JSON.stringify(services, null, 2));
   }
 
-  async getServices() {
-    return this.#readFile();
+  async getServices({ category, available } = {}) {
+    let services = await this.#readFile();
+
+    if (category !== undefined) {
+      services = services.filter(
+        (s) => s.category.toLowerCase() === String(category).toLowerCase()
+      );
+    }
+
+    if (available !== undefined) {
+      services = services.filter((s) => s.available === available);
+    }
+
+    return services;
   }
 
   async getServiceById(id) {

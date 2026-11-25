@@ -115,3 +115,31 @@ POST /api/bookings
 - `src/routes/services.router.js` y `bookings.router.js`: endpoints.
 - `src/data/`: `services.json` y `bookings.json`.
 - `src/utils/errors.js`: errores de validación compartidos.
+
+## Arquitectura
+
+El proyecto separa responsabilidades en tres capas:
+
+```
+router → controller → manager → archivo JSON
+```
+
+| Capa | Archivos | Responsabilidad |
+|------|----------|-----------------|
+| Router | `src/routes/` | Define los endpoints y los conecta con su controller |
+| Controller | `src/controllers/` | Lee `req.params`, `req.query` y `req.body`, llama al manager y responde con `res.status().json()` |
+| Manager | `src/managers/` | Lógica de datos y persistencia; no usa `req` ni `res` |
+
+## Estructura
+
+```
+src/
+  config/env.config.js
+  controllers/  services.controller.js, bookings.controller.js
+  managers/     ServiceManager.js, BookingManager.js
+  routes/       services.router.js, bookings.router.js
+  data/         services.json, bookings.json
+  utils/errors.js
+  app.js
+  server.js
+```
