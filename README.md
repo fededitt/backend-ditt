@@ -50,7 +50,7 @@ await manager.deleteService(1);                    // eliminado o null
 
 `addService` lanza un error si falta algún campo requerido.
 
-## Endpoints
+## Services
 
 | Método | Ruta | Descripción | Códigos |
 |--------|------|-------------|---------|
@@ -80,3 +80,38 @@ POST /api/services
 - `src/server.js`: levanta el servidor en el puerto del `.env`.
 - `src/routes/services.router.js`: endpoints de servicios.
 - `src/managers/ServiceManager.js`: lógica y persistencia en JSON.
+
+## Recurso `bookings`
+
+```js
+{ id, clientName, clientEmail, date, time, status, services: [{ service, quantity }] }
+```
+
+- `id` se genera automáticamente.
+- `status` por defecto es `pending` (valores: `pending`, `confirmed`, `cancelled`).
+- Si el mismo servicio se agrega dos veces, se incrementa `quantity`.
+
+| Método | Ruta | Descripción | Códigos |
+|--------|------|-------------|---------|
+| POST | /api/bookings | Crea una reserva (services vacío) | 201, 400 |
+| GET | /api/bookings/:bid | Reserva por id | 200, 404 |
+| POST | /api/bookings/:bid/services/:sid | Agrega un servicio a la reserva | 200, 404 |
+
+### Ejemplo: crear una reserva
+
+```json
+POST /api/bookings
+{
+  "clientName": "Martín Gómez",
+  "clientEmail": "martin@mail.com",
+  "date": "2026-12-05",
+  "time": "16:30"
+}
+```
+
+## Estructura
+
+- `src/managers/ServiceManager.js` y `BookingManager.js`: lógica y persistencia en JSON.
+- `src/routes/services.router.js` y `bookings.router.js`: endpoints.
+- `src/data/`: `services.json` y `bookings.json`.
+- `src/utils/errors.js`: errores de validación compartidos.

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import ServiceManager, { ValidationError } from "../managers/ServiceManager.js";
+import ServiceManager from "../managers/ServiceManager.js";
+import { ValidationError } from "../utils/errors.js";
 
 const router = Router();
 const manager = new ServiceManager();

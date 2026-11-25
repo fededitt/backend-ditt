@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ValidationError } from "../utils/errors.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PATH = path.join(__dirname, "..", "data", "services.json");
@@ -15,12 +16,6 @@ const REQUIRED_FIELDS = [
 ];
 
 
-export class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "ValidationError";
-  }
-}
 
 export default class ServiceManager {
   constructor(filePath = DEFAULT_PATH) {
