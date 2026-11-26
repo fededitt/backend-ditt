@@ -4,7 +4,11 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 const bookingsService = new BookingsService();
 
 const handleError = (res, error) => {
-  if (error instanceof ValidationError) {
+  if (
+    error instanceof ValidationError ||
+    error.name === "ValidationError" ||
+    error.name === "CastError"
+  ) {
     return res.status(400).json({ status: "error", message: error.message });
   }
   if (error instanceof NotFoundError) {

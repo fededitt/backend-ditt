@@ -48,22 +48,24 @@ export default class BookingsService {
     return booking;
   }
 
-  async addServiceToBooking(bookingId, serviceId) {
+    async addServiceToBooking(bookingId, serviceId) {
     // Valida que el servicio exista (lanza NotFoundError si no)
-    await this.servicesService.getServiceById(serviceId);
+    const service = await this.servicesService.getServiceById(serviceId);
     const booking = await this.getBookingById(bookingId);
 
-    const sid = Number(serviceId);
     const services = booking.services.map((item) => ({ ...item }));
-    const item = services.find((s) => s.service === sid);
+    const item = services.find(
+      (s) => String(s.service) === String(service._id)
+    );
 
     // Regla de negocio: si el servicio ya está, se incrementa quantity
     if (item) {
       item.quantity += 1;
     } else {
-      services.push({ service: sid, quantity: 1 });
+      services.push({ service: service._id, quantity: 1 });
     }
 
-    return this.repository.update(booking.id, { services });
+    return this.repository.update(booking._id, { services });
   }
+  
 }

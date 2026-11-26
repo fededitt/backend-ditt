@@ -1,50 +1,24 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import mongoose from "mongoose";
+import BookingModel from "../models/booking.model.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_PATH = path.join(__dirname, "..", "data", "bookings.json");
+const isValidId = (id) => mongoose.isObjectIdOrHexString(id);
 
 export default class BookingsDAO {
-  constructor(filePath = DEFAULT_PATH) {
-    this.filePath = filePath;
-  }
-
-  async #read() {
-    try {
-      const data = await fs.readFile(this.filePath, "utf-8");
-      return JSON.parse(data);
-    } catch (error) {
-      if (error.code === "ENOENT") return [];
-      throw error;
-    }
-  }
-
-  async #write(bookings) {
-    await fs.writeFile(this.filePath, JSON.stringify(bookings, null, 2));
-  }
-
   async create(data) {
-    const bookings = await this.#read();
-    const nextId =
-      bookings.length > 0 ? Math.max(...bookings.map((b) => b.id)) + 1 : 1;
-    const newBooking = { id: nextId, ...data };
-    bookings.push(newBooking);
-    await this.#write(bookings);
-    return newBooking;
+    const created = await BookingModel.create(data);
+    return created.toObject();
   }
 
   async getById(id) {
-    const bookings = await this.#read();
-    return bookings.find((b) => b.id === Number(id)) ?? null;
+    if (!isValidId(id)) return null;
+    return BookingModel.findById(id).lean();
   }
 
   async update(id, data) {
-    const bookings = await this.#read();
-    const index = bookings.findIndex((b) => b.id === Number(id));
-    if (index === -1) return null;
-    bookings[index] = { ...bookings[index], ...data, id: bookings[index].id };
-    await this.#write(bookings);
-    return bookings[index];
+    if (!isValidId(id)) return null;
+    return BookingModel.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    }).lean();
   }
 }

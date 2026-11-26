@@ -156,3 +156,38 @@ src/
   app.js
   server.js
 ```
+
+## Base de datos
+
+La API usa **MongoDB Atlas** con **Mongoose**. Configurá la URI en `.env`:
+
+```
+MONGO_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/barberia
+```
+
+### Variables de entorno
+
+| Variable | Descripción |
+|----------|-------------|
+| PORT | Puerto del servidor |
+| NODE_ENV | Entorno de ejecución |
+| MONGO_URI | URI de conexión a MongoDB Atlas |
+
+### Modelos (`src/models/`)
+
+- `service.model.js`: servicios de la barbería.
+- `booking.model.js`: reservas; los servicios se guardan como `{ service: ObjectId, quantity }`.
+- `message.model.js`: mensajes.
+
+### Datos iniciales
+
+```bash
+npm run seed
+```
+
+Carga los servicios de `src/data/services.json` en la base.
+
+### Nota sobre ids
+
+Los identificadores son `ObjectId` de MongoDB y se devuelven como `_id`.
+
