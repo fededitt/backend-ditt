@@ -9,6 +9,10 @@ export default class ServicesRepository {
     return this.dao.getAll();
   }
 
+  getPaginated(filter, options) {
+    return this.dao.getPaginated(filter, options);
+  }
+
   getById(id) {
     return this.dao.getById(id);
   }

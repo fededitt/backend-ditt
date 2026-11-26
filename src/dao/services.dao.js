@@ -8,6 +8,21 @@ export default class ServicesDAO {
     return ServiceModel.find().lean();
   }
 
+  async getPaginated(filter, { page, limit, sortBy, order }) {
+    const direction = order === "desc" ? -1 : 1;
+
+    const [docs, total] = await Promise.all([
+      ServiceModel.find(filter)
+        .sort({ [sortBy]: direction, _id: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      ServiceModel.countDocuments(filter),
+    ]);
+
+    return { docs, total };
+  }
+
   async getById(id) {
     if (!isValidId(id)) return null;
     return ServiceModel.findById(id).lean();

@@ -150,9 +150,11 @@ src/
   config/env.config.js
   controllers/, services/, repositories/, dao/, routes/, data/, utils/ y config/.
   managers/     ServiceManager.js, BookingManager.js
+  middlewares/
   routes/       services.router.js, bookings.router.js
   data/         services.json, bookings.json
   utils/errors.js
+  validaotrs/
   app.js
   server.js
 ```
@@ -227,4 +229,93 @@ src/
   public/css/styles.css
   public/js/socket.js
 ```
+## Consultas avanzadas, validación y populate
 
+### GET /api/services: filtros, paginación y orden
+
+| Query param | Valores | Por defecto |
+|-------------|---------|-------------|
+| `category` | texto (ej. `cabello`, `barba`, `combo`) | todas |
+| `available` | `true` o `false` | todos |
+| `page` | entero >= 1 | 1 |
+| `limit` | entero entre 1 y 50 | 10 |
+| `sortBy` | `name`, `price`, `duration`, `category`, `createdAt` | `createdAt` |
+| `order` | `asc` o `desc` | `asc` |
+
+Ejemplos:
+
+```
+GET /api/services?category=cabello&available=true
+GET /api/services?page=2&limit=2
+GET /api/services?sortBy=price&order=desc
+GET /api/services?category=cabello&sortBy=price&order=asc&page=1&limit=5
+```
+
+Respuesta:
+
+```json
+{
+  "status": "success",
+  "payload": [ { "_id": "...", "name": "Coloración", "price": 18000 } ],
+  "total": 4,
+  "page": 1,
+  "limit": 2,
+  "totalPages": 2,
+  "hasPrevPage": false,
+  "hasNextPage": true
+}
+```
+
+### Validaciones (Zod)
+
+Los esquemas están en `src/validators/` y se aplican con el middleware `src/middlewares/validate.middleware.js`, antes del controller y de MongoDB. Si los datos son inválidos se responde `400` con un mensaje claro.
+
+| Endpoint | Se valida |
+|----------|-----------|
+| POST /api/services | name, description, category (texto no vacío), duration (entero > 0), price (número >= 0), available (booleano) |
+| PUT /api/services/:sid | mismos campos, todos opcionales; al menos uno |
+| GET /api/services | query params de la tabla anterior |
+| POST /api/bookings | clientName, clientEmail (email válido), date (`YYYY-MM-DD`), time (`HH:MM`), status opcional |
+| POST /api/bookings/:bid/services/:sid | `bid` y `sid` con formato de id válido |
+
+Ejemplo de error:
+
+```json
+{ "status": "error", "message": "duration debe ser un número" }
+```
+
+### Consultar una reserva con sus servicios completos
+
+En la reserva se guardan solo referencias (`{ service: ObjectId, quantity }`). Al consultar, `populate` trae los datos completos:
+
+```
+GET /api/bookings/<bid>
+```
+
+```json
+{
+  "status": "success",
+  "payload": {
+    "_id": "...",
+    "clientName": "Martín Gómez",
+    "clientEmail": "martin@mail.com",
+    "date": "2026-12-05",
+    "time": "16:30",
+    "status": "pending",
+    "services": [
+      {
+        "service": {
+          "_id": "...",
+          "name": "Corte clásico",
+          "description": "Corte de pelo con tijera y máquina, incluye lavado",
+          "duration": 30,
+          "price": 8000,
+          "category": "cabello",
+          "available": true
+        },
+        "quantity": 2
+      }
+    ]
+  }
+}
+```

@@ -16,9 +16,16 @@ export default class BookingsDAO {
     return created.toObject();
   }
 
+  // Sin populate: para uso interno (por ejemplo, al agregar un servicio)
   async getById(id) {
     if (!isValidId(id)) return null;
     return BookingModel.findById(id).lean();
+  }
+
+  // Con populate: devuelve los datos completos de cada servicio (solo para consultar)
+  async getByIdPopulated(id) {
+    if (!isValidId(id)) return null;
+    return BookingModel.findById(id).populate("services.service").lean();
   }
 
   async update(id, data) {

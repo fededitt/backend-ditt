@@ -21,6 +21,7 @@ export default class ServicesService {
     this.repository = repository;
   }
 
+  // Lista completa (la usan las vistas)
   async getServices({ category, available } = {}) {
     let services = await this.repository.getAll();
 
@@ -35,6 +36,32 @@ export default class ServicesService {
     }
 
     return services;
+  }
+
+  // Lista con filtros, orden y paginación (la usa GET /api/services)
+  async getServicesPaginated({ category, available, page, limit, sortBy, order }) {
+    const filter = {};
+    if (category !== undefined) filter.category = category.toLowerCase();
+    if (available !== undefined) filter.available = available;
+
+    const { docs, total } = await this.repository.getPaginated(filter, {
+      page,
+      limit,
+      sortBy,
+      order,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      payload: docs,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasPrevPage: page > 1,
+      hasNextPage: page < totalPages,
+    };
   }
 
   async getServiceById(id) {

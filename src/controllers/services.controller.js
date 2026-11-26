@@ -22,18 +22,9 @@ const handleError = (res, error) => {
 
 export const getServices = async (req, res) => {
   try {
-    const { category, available } = req.query;
-
-    if (available !== undefined && available !== "true" && available !== "false") {
-      throw new ValidationError("available debe ser true o false");
-    }
-
-    const services = await servicesService.getServices({
-      category,
-      available: available === undefined ? undefined : available === "true",
-    });
-
-    res.status(200).json({ status: "success", payload: services });
+    // Los query params ya fueron validados y convertidos por el middleware
+    const result = await servicesService.getServicesPaginated(req.validatedQuery);
+    res.status(200).json({ status: "success", ...result });
   } catch (error) {
     handleError(res, error);
   }

@@ -46,16 +46,20 @@ export default class BookingsService {
     });
   }
 
+  // Consulta: devuelve la reserva con los datos completos de cada servicio (populate)
   async getBookingById(id) {
-    const booking = await this.repository.getById(id);
+    const booking = await this.repository.getByIdPopulated(id);
     if (!booking) throw new NotFoundError("Reserva no encontrada");
     return booking;
   }
 
-    async addServiceToBooking(bookingId, serviceId) {
+  async addServiceToBooking(bookingId, serviceId) {
     // Valida que el servicio exista (lanza NotFoundError si no)
     const service = await this.servicesService.getServiceById(serviceId);
-    const booking = await this.getBookingById(bookingId);
+
+    // Sin populate: en la reserva se guardan solo referencias (ObjectId)
+    const booking = await this.repository.getById(bookingId);
+    if (!booking) throw new NotFoundError("Reserva no encontrada");
 
     const services = booking.services.map((item) => ({ ...item }));
     const item = services.find(
@@ -71,5 +75,4 @@ export default class BookingsService {
 
     return this.repository.update(booking._id, { services });
   }
-
 }
