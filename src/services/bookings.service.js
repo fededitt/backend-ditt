@@ -14,6 +14,10 @@ export default class BookingsService {
     this.servicesService = servicesService;
   }
 
+  async getBookings() {
+    return this.repository.getAll();
+  }
+
   async createBooking(data = {}) {
     const missing = REQUIRED_FIELDS.filter(
       (f) => data[f] === undefined || data[f] === null || data[f] === ""
@@ -67,5 +71,5 @@ export default class BookingsService {
 
     return this.repository.update(booking._id, { services });
   }
-  
+
 }

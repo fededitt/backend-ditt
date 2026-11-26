@@ -191,3 +191,40 @@ Carga los servicios de `src/data/services.json` en la base.
 
 Los identificadores son `ObjectId` de MongoDB y se devuelven como `_id`.
 
+## Vistas y tiempo real
+
+### Vistas (Handlebars)
+
+| Ruta | Descripción |
+|------|-------------|
+| GET /views/services | Listado de servicios desde MongoDB, con alta, cambio de disponibilidad y baja |
+| GET /views/bookings | Listado de reservas con sus servicios |
+
+Las vistas no tienen datos hardcodeados: el controller de vistas usa las mismas capas que la API (service → repository → DAO → model).
+
+### Socket.io
+
+Cuando un controller de la API completa una acción, emite un evento y los navegadores conectados actualizan la vista sin recargar.
+
+| Evento | Se emite al | Efecto en la vista |
+|--------|-------------|--------------------|
+| `service:created` | crear un servicio | agrega la tarjeta |
+| `service:updated` | actualizar un servicio | actualiza la tarjeta |
+| `service:deleted` | eliminar un servicio | quita la tarjeta |
+| `booking:created` | crear una reserva | agrega una fila en la tabla |
+
+El cliente escucha los eventos en `src/public/js/socket.js`.
+
+### Estructura nueva
+
+```
+src/
+  controllers/views.controller.js
+  routes/views.router.js
+  views/layouts/main.handlebars
+  views/services.handlebars
+  views/bookings.handlebars
+  public/css/styles.css
+  public/js/socket.js
+```
+

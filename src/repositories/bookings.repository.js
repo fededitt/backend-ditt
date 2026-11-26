@@ -5,6 +5,10 @@ export default class BookingsRepository {
     this.dao = dao;
   }
 
+  getAll() {
+    return this.dao.getAll();
+  }
+
   create(data) {
     return this.dao.create(data);
   }

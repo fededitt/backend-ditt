@@ -1,0 +1,37 @@
+<h1>Servicios</h1>
+
+<form id="service-form" class="form">
+  <h2>Nuevo servicio</h2>
+  <input name="name" placeholder="Nombre" required>
+  <input name="description" placeholder="Descripción" required>
+  <input name="duration" type="number" min="1" placeholder="Duración (min)" required>
+  <input name="price" type="number" min="0" placeholder="Precio" required>
+  <input name="category" placeholder="Categoría (cabello, barba, combo)" required>
+  <select name="available">
+    <option value="true">Disponible</option>
+    <option value="false">No disponible</option>
+  </select>
+  <button type="submit">Crear servicio</button>
+  <p id="form-message"></p>
+</form>
+
+<section id="services-list" class="grid">
+  {{#each services}}
+  <article class="card" data-id="{{_id}}">
+    <h2 class="name">{{name}}</h2>
+    <p class="description">{{description}}</p>
+    <ul>
+      <li>Duración: <span class="duration">{{duration}}</span> min</li>
+      <li>Precio: $<span class="price">{{price}}</span></li>
+      <li>Categoría: <span class="category">{{category}}</span></li>
+    </ul>
+    <span class="badge {{#if available}}ok{{else}}off{{/if}}">{{#if available}}Disponible{{else}}No disponible{{/if}}</span>
+    <div class="actions">
+      <button class="toggle">Cambiar disponibilidad</button>
+      <button class="delete">Eliminar</button>
+    </div>
+  </article>
+  {{else}}
+  <p id="empty-msg">No hay servicios cargados.</p>
+  {{/each}}
+</section>

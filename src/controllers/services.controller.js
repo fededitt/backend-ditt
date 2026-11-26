@@ -3,6 +3,9 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 
 const servicesService = new ServicesService();
 
+// Convierte el documento (con ObjectId) a un objeto simple para enviarlo por socket
+const plain = (doc) => JSON.parse(JSON.stringify(doc));
+
 const handleError = (res, error) => {
   if (
     error instanceof ValidationError ||
@@ -48,6 +51,7 @@ export const getServiceById = async (req, res) => {
 export const createService = async (req, res) => {
   try {
     const created = await servicesService.createService(req.body);
+    req.app.get("io")?.emit("service:created", plain(created));
     res.status(201).json({ status: "success", payload: created });
   } catch (error) {
     handleError(res, error);
@@ -57,6 +61,7 @@ export const createService = async (req, res) => {
 export const updateService = async (req, res) => {
   try {
     const updated = await servicesService.updateService(req.params.sid, req.body);
+    req.app.get("io")?.emit("service:updated", plain(updated));
     res.status(200).json({ status: "success", payload: updated });
   } catch (error) {
     handleError(res, error);
@@ -66,6 +71,7 @@ export const updateService = async (req, res) => {
 export const deleteService = async (req, res) => {
   try {
     const deleted = await servicesService.deleteService(req.params.sid);
+    req.app.get("io")?.emit("service:deleted", plain(deleted));
     res.status(200).json({ status: "success", payload: deleted });
   } catch (error) {
     handleError(res, error);

@@ -4,6 +4,13 @@ import BookingModel from "../models/booking.model.js";
 const isValidId = (id) => mongoose.isObjectIdOrHexString(id);
 
 export default class BookingsDAO {
+  async getAll() {
+    return BookingModel.find()
+      .populate("services.service")
+      .sort({ createdAt: -1 })
+      .lean();
+  }
+
   async create(data) {
     const created = await BookingModel.create(data);
     return created.toObject();

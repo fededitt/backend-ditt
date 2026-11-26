@@ -1,0 +1,28 @@
+<h1>Reservas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Email</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th>Estado</th>
+      <th>Servicios</th>
+    </tr>
+  </thead>
+  <tbody id="bookings-body">
+    {{#each bookings}}
+    <tr data-id="{{_id}}">
+      <td>{{clientName}}</td>
+      <td>{{clientEmail}}</td>
+      <td>{{date}}</td>
+      <td>{{time}}</td>
+      <td>{{status}}</td>
+      <td>{{#each services}}{{name}} x{{quantity}}{{#unless @last}}, {{/unless}}{{else}}—{{/each}}</td>
+    </tr>
+    {{else}}
+    <tr id="empty-row"><td colspan="6">No hay reservas todavía.</td></tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -3,6 +3,8 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 
 const bookingsService = new BookingsService();
 
+const plain = (doc) => JSON.parse(JSON.stringify(doc));
+
 const handleError = (res, error) => {
   if (
     error instanceof ValidationError ||
@@ -20,6 +22,7 @@ const handleError = (res, error) => {
 export const createBooking = async (req, res) => {
   try {
     const booking = await bookingsService.createBooking(req.body);
+    req.app.get("io")?.emit("booking:created", plain(booking));
     res.status(201).json({ status: "success", payload: booking });
   } catch (error) {
     handleError(res, error);
